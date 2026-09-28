@@ -1,0 +1,311 @@
+<title>Validate-Version Timing Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef0f4; --line:#d7dbe3; --ink:#1b2130; --ink-2:#4a5366; --ink-3:#8a93a6;
+  --u1:#2f5bd3; --u1-bg:#e8eefc; --u2:#0f8a7a; --u2-bg:#e3f4f1; --u3:#c0620f; --u3-bg:#fbeee2;
+  --wait:#c2255c; --wait-bg:#fde7ef; --raise:#2b8a3e; --raise-bg:#e5f5e8; --time:#51607a; --time-bg:#eef1f6;
+  --lineup:#5b4bb5; --lineup-bg:#eeebfb;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --surface:#1a1f29; --surface-2:#222835; --line:#303848; --ink:#e7eaf0; --ink-2:#b0b8c8; --ink-3:#7f889a;
+  --u1:#7fa2ff; --u1-bg:#1f2a45; --u2:#4fd1bd; --u2-bg:#15312d; --u3:#f0a35e; --u3-bg:#3a2717;
+  --wait:#ff7aa6; --wait-bg:#3d1c29; --raise:#6bd687; --raise-bg:#1a3322; --time:#b3bdd0; --time-bg:#262d3a;
+  --lineup:#b3a6ff; --lineup-bg:#2a2445; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --surface:#1a1f29; --surface-2:#222835; --line:#303848; --ink:#e7eaf0; --ink-2:#b0b8c8; --ink-3:#7f889a;
+  --u1:#7fa2ff; --u1-bg:#1f2a45; --u2:#4fd1bd; --u2-bg:#15312d; --u3:#f0a35e; --u3-bg:#3a2717;
+  --wait:#ff7aa6; --wait-bg:#3d1c29; --raise:#6bd687; --raise-bg:#1a3322; --time:#b3bdd0; --time-bg:#262d3a;
+  --lineup:#b3a6ff; --lineup-bg:#2a2445; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;padding-inline:16px;padding-block:28px 60px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:30px}
+h1{font-size:30px;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:21px;margin:0 0 4px;text-wrap:balance}
+h3{font-size:16px;margin:0}
+p{margin:0}
+code{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:12.5px}
+.lede{color:var(--ink-2);margin-top:8px;font-size:16px;max-width:66ch}
+.sub{color:var(--ink-2);max-width:72ch}
+section{display:flex;flex-direction:column;gap:12px}
+
+.flow{display:flex;align-items:stretch;flex-wrap:wrap;flex-direction:row}
+.stage{flex:1 1 200px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.stage .n{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.stage .t{font-size:18px;font-weight:700}
+.stage .d{font-size:13.5px;color:var(--ink-2)}
+.arrow{flex:0 0 36px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:22px}
+@media (max-width:700px){.arrow{flex-basis:100%;height:26px;transform:rotate(90deg)}}
+
+.ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.idea{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.idea p{color:var(--ink-2);font-size:14.5px}
+.idea .ex{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.idea ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:14.5px;display:flex;flex-direction:column;gap:3px}
+
+.dot{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--surface);font-weight:700;font-size:12px;flex:none}
+.dot.u1{background:var(--u1)} .dot.u2{background:var(--u2)} .dot.u3{background:var(--u3)}
+.mini{width:15px;height:15px;font-size:9.5px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:12px;padding:2px 8px;border-radius:20px;white-space:nowrap;line-height:1.5}
+.tag svg{width:11px;height:11px}
+.tag.wait{background:var(--wait-bg);color:var(--wait)}
+.tag.raise{background:var(--raise-bg);color:var(--raise)}
+.tag.retry{background:var(--time-bg);color:var(--time)}
+.tag.clock{background:var(--time-bg);color:var(--time);font-variant-numeric:tabular-nums}
+.tag.lineup{background:var(--lineup-bg);color:var(--lineup)}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-size:14px;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.legend .i{display:flex;align-items:center;gap:8px}
+
+.scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.lanes{min-width:760px;display:grid;grid-template-columns:180px repeat(3,1fr)}
+.head{padding:12px 10px;display:flex;align-items:center;gap:8px;justify-content:center;font-weight:700;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.head.first{justify-content:flex-start}
+.round{grid-column:1/-1;padding:10px 14px;font-weight:700;font-size:14px;background:var(--ink);color:var(--bg);letter-spacing:.02em}
+.lineuprow{grid-column:1/-1;padding:8px 14px;font-weight:600;font-size:13.5px;background:var(--lineup-bg);color:var(--lineup);border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.lineuprow svg{width:14px;height:14px;flex:none}
+.lbl{padding:10px 12px;display:flex;flex-direction:column;gap:5px;justify-content:center;border-bottom:1px solid var(--line)}
+.lbl .num{font-size:12px;color:var(--ink-3);font-weight:600}
+.lbl .name{font-weight:700;line-height:1.25}
+.lbl .why{font-size:12.5px;color:var(--ink-2);line-height:1.35}
+.lane{position:relative;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border-bottom:1px solid var(--line);min-height:74px}
+.lane::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:3px;transform:translateX(-50%);opacity:.22}
+.lane.c1::before{background:var(--u1)} .lane.c2::before{background:var(--u2)} .lane.c3::before{background:var(--u3)}
+.lane > *{position:relative;z-index:1}
+.node{border-radius:20px;padding:5px 12px;font-weight:600;font-size:13.5px;text-align:center;line-height:1.25;border:2px solid}
+.node.c1{background:var(--u1-bg);color:var(--u1);border-color:var(--u1)}
+.node.c2{background:var(--u2-bg);color:var(--u2);border-color:var(--u2)}
+.node.c3{background:var(--u3-bg);color:var(--u3);border-color:var(--u3)}
+
+.handoff{background:var(--surface);border:1px dashed var(--ink-3);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;color:var(--ink-2);font-size:14.5px}
+.handoff b{color:var(--ink)}
+
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:720px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:700;background:var(--surface-2)}
+td.v{white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums}
+td .who{display:flex;gap:3px;flex-wrap:wrap}
+td.gname{white-space:nowrap}
+
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.big .c{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.big .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.big .k{font-size:13.5px;color:var(--ink-2)}
+.note{color:var(--ink-3);font-size:13.5px}
+.src{font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:4px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>PMC release test, as a pipeline</h1>
+    <p class="lede">Before a new PMC version is released, a robot tests it with 3 users working on the same project at the same time, like 3 real colleagues. This page shows what each user does, when they wait for each other, and how long they wait.</p>
+  </header>
+
+  <section class="flow" aria-label="Overview">
+    <div class="stage"><span class="n">Round 1 · steps 1–6</span><span class="t">Set up</span><span class="d">New project, 10 plan lines, lock budget</span></div>
+    <div class="arrow">→</div>
+    <div class="stage"><span class="n">Round 2 · steps 7–15</span><span class="t">Money flow</span><span class="d">Staff, contracts, goods receipt, invoices</span></div>
+    <div class="arrow">→</div>
+    <div class="stage"><span class="n">Round 3 · steps 16–24</span><span class="t">Final checks</span><span class="d">Timesheets, last lock, totals, log out</span></div>
+  </section>
+
+  <section>
+    <h2>5 ideas you need to read the picture</h2>
+    <div class="ideas">
+      <div class="idea">
+        <h3>1. Three users</h3>
+        <p>Each user is its own browser, clicking through PMC by itself. They all work at the same time.</p>
+        <div class="ex"><span class="dot u1">1</span><b>the lead</b> <span class="dot u2">2</span><b>helper</b> <span class="dot u3">3</span><b>checker</b></div>
+        <p style="font-size:13px;color:var(--ink-3)">In the code: primary, secondary1, secondary2.</p>
+      </div>
+      <div class="idea">
+        <h3>2. Line-ups</h3>
+        <p>A line-up is a point where <b>everyone</b> must finish before <b>anyone</b> continues. There are only a few line-ups, at the start of each round.</p>
+        <div class="ex"><span class="tag lineup" data-i="line">Line-up</span></div>
+      </div>
+      <div class="idea">
+        <h3>3. Gates</h3>
+        <p>A gate is a “done” flag between specific users. One user <b>raises</b> it when they finish something. Another user <b>waits</b> at it until it is raised.</p>
+        <div class="ex"><span class="tag raise" data-i="flag">raises Gate 7</span> → <span class="tag wait" data-i="stop">waits for <span class="dot u1 mini">1</span> · Gate 7</span></div>
+        <ul>
+          <li>The waiting user checks the flag every <b>1 second</b>.</li>
+          <li>It gives up after <b>10 minutes</b>.</li>
+          <li>The flag is raised even if that user’s step failed, so nobody waits forever.</li>
+        </ul>
+      </div>
+      <div class="idea">
+        <h3>4. Live pop-ups</h3>
+        <p>When a user saves Goods Receipt or Timesheet Review, PMC shows an “Updated” pop-up to other users. This pop-up only reaches users who are <b>already on that screen</b>. That’s why checkers open the screen early and sit there waiting.</p>
+      </div>
+      <div class="idea">
+        <h3>5. Three kinds of time</h3>
+        <ul>
+          <li><b>Pause:</b> always waits this long so the screen can load (0.2 to 3 seconds).</li>
+          <li><b>Time limit:</b> waits up to this long but continues as soon as ready.</li>
+          <li><b>Retry:</b> tries again every few seconds until it works or the limit is reached.</li>
+        </ul>
+        <div class="ex"><span class="tag clock" data-i="clock">up to 90 s</span><span class="tag retry" data-i="retry">reloads every 5 s</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The pipeline</h2>
+    <p class="sub">Read top to bottom. Each coloured line is one user. An empty spot means that user has nothing to do in that step.</p>
+    <div class="legend" aria-label="Legend">
+      <span class="i"><span class="tag lineup" data-i="line">Line-up</span>everyone waits here</span>
+      <span class="i"><span class="tag raise" data-i="flag">raises Gate 1</span>says “I’m done”</span>
+      <span class="i"><span class="tag wait" data-i="stop">waits for <span class="dot u1 mini">1</span> · Gate 1</span>stops until that user is done</span>
+      <span class="i"><span class="tag clock" data-i="clock">up to 10 min</span>longest wait in the step</span>
+    </div>
+    <div class="scroll"><div class="lanes" id="lanes"></div></div>
+  </section>
+
+  <section>
+    <h2>All 10 gates</h2>
+    <p class="sub">Every gate uses the same rules: checks every 1 second, gives up after 10 minutes, and is raised even when a step fails.</p>
+    <div class="tbl"><table id="gates">
+      <thead><tr><th>Gate</th><th>Raised by</th><th>Waited on by</th><th>Why it’s needed</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>How long things can take</h2>
+    <div class="big">
+      <div class="c"><span class="v">10 min</span><span class="k">Longest wait at a gate, or for an “Updated” pop-up</span></div>
+      <div class="c"><span class="v">5 min</span><span class="k">Accrual report retries until the amount matches (every 5 s)</span></div>
+      <div class="c"><span class="v">3 min</span><span class="k">Reloading until a budget shows “Locked” (every 5 s)</span></div>
+      <div class="c"><span class="v">90 s</span><span class="k">PMC loading at login, file downloads, imports</span></div>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Wait</th><th>Kind</th><th>Where</th><th>How long</th></tr></thead>
+      <tbody>
+        <tr><td>Waiting at a gate</td><td>Time limit (checks every 1 s)</td><td>Steps 9–17, 20–21</td><td class="v">up to 10 min</td></tr>
+        <tr><td>“Receipt Of Goods Updated” pop-up</td><td>Time limit</td><td>Step 10 · Users 1, 3</td><td class="v">up to 10 min</td></tr>
+        <tr><td>“Timesheet Review Updated” pop-up</td><td>Time limit</td><td>Step 16 · Users 2, 3</td><td class="v">up to 10 min</td></tr>
+        <tr><td>Accrual amount matches</td><td>Retry every 5 s</td><td>Step 11</td><td class="v">up to 5 min</td></tr>
+        <tr><td>Budget shows “Locked”</td><td>Retry (reload) every 5 s</td><td>Steps 6, 12–13, 20–21</td><td class="v">up to 3 min</td></tr>
+        <tr><td>PMC loads, login form appears</td><td>Time limit</td><td>Every login</td><td class="v">up to 90 s</td></tr>
+        <tr><td>File download / import finishes</td><td>Time limit</td><td>Steps 11, 14, 17, 18, 19</td><td class="v">up to 90 s</td></tr>
+        <tr><td>Saving a form (staff, Editor Mode)</td><td>Time limit</td><td>Steps 7, 10, 16</td><td class="v">up to 45 s</td></tr>
+        <tr><td>A table loads after search / reload</td><td>Time limit</td><td>Most steps</td><td class="v">up to 30 s</td></tr>
+        <tr><td>After creating a contract</td><td>Time limit</td><td>Step 9</td><td class="v">up to 20 s</td></tr>
+        <tr><td>Any single click</td><td>Time limit</td><td>Everywhere</td><td class="v">up to 15 s</td></tr>
+        <tr><td>Before reading PO numbers</td><td>Pause</td><td>Resource Planning</td><td class="v">3 s</td></tr>
+        <tr><td>After typing in a search box</td><td>Pause</td><td>Steps 6, 8, 9, 12–13, 20–22</td><td class="v">1.5 s</td></tr>
+        <tr><td>After checking the project is visible</td><td>Pause</td><td>Steps 3, 12–13, 20–21, 23</td><td class="v">0.8 s</td></tr>
+        <tr><td>Goods receipt select all / merge</td><td>Pause</td><td>Step 10</td><td class="v">0.6 s each</td></tr>
+        <tr><td>After editing a cell</td><td>Pause</td><td>Step 16</td><td class="v">0.5 s</td></tr>
+        <tr><td>Dialogs and form fields</td><td>Pause</td><td>Everywhere</td><td class="v">0.15–0.4 s</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">The pauses are tiny and barely add up. If a run is slow, look at the gates and pop-ups first.</p>
+  </section>
+
+  <section class="src">
+    <h2>Where this comes from</h2>
+    <p>Repo <b>pmc-pipeline</b>:</p>
+    <p>Steps, users and gates: <code>backend/regression/builder.py</code></p>
+    <p>Test data (lines, staff, contracts): <code>backend/regression/test_data.py</code></p>
+    <p>Time limits: <code>backend/runners/timeouts.py</code> and each file in <code>backend/runners/</code></p>
+  </section>
+</div>
+
+<script>
+const ICONS={
+ clock:'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 1.5"/></svg>',
+ flag:'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 11V1.5M2.5 2h6.5l-1.5 2.2L9 6.5H2.5"/></svg>',
+ stop:'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 2.5v7M8 2.5v7"/></svg>',
+ retry:'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 6a4 4 0 1 1-1.2-2.8M10 1.5v2.5H7.5"/></svg>',
+ line:'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 6h10M3 3v6M6 3v6M9 3v6"/></svg>',
+};
+document.querySelectorAll('[data-i]').forEach(el=>el.insertAdjacentHTML('afterbegin',ICONS[el.dataset.i]));
+
+const mini=u=>`<span class="dot u${u} mini">${u}</span>`;
+const WAIT=(us,g)=>`<span class="tag wait">${ICONS.stop}waits for ${us.map(mini).join('')} · Gate ${g}</span>`;
+const RAISE=g=>`<span class="tag raise">${ICONS.flag}raises Gate ${g}</span>`;
+const RETRY=t=>`<span class="tag retry">${ICONS.retry}${t}</span>`;
+const N=(u,t)=>`<span class="node c${u}">${t}</span>`;
+const ALL=[1,2,3];
+
+// A lane is an array of items: ['node', text] | ['wait', users, gate] | ['raise', gate] | ['retry', text]
+const n=t=>['node',t], w=(us,g)=>['wait',us,g], r=g=>['raise',g], rt=t=>['retry',t];
+
+const ROWS=[
+ {round:'Round 1 · Set up'},
+ {s:'1',nm:'Log in',why:'Starts video recording, then logs in.',t:'90 s',u:[[n('Log in')],null,null]},
+ {s:'2',nm:'Create project',why:'Shared with Users 2 and 3.',t:'30 s',u:[[n('Create project')],null,null]},
+ {lineup:'Line-up: Users 2 and 3 have been waiting for the project to exist. Now all 3 start together.'},
+ {s:'3',nm:'Check access',why:'Can the other users open it?',t:'90 s',u:[null,[n('Log in + check')],[n('Log in + check')]]},
+ {s:'4',nm:'Add 10 plan lines',why:'Split 3 / 3 / 4.',t:'—',u:[[n('3 lines')],[n('3 lines')],[n('4 lines')]]},
+ {lineup:'Line-up: nobody continues until all 10 lines are saved.'},
+ {s:'5',nm:'Check total',why:'Should be 861.058,00 EUR.',t:'45 s',u:[[n('Check total')],null,null]},
+ {s:'6',nm:'Lock budget',why:'No gate here: checkers just reload until they see it.',t:'3 min',u:[[n('Lock')],[n('See lock'),rt('reloads every 5 s')],[n('See lock'),rt('reloads every 5 s')]]},
+ {handoff:'<b>Between Round 1 and Round 2</b><span>Nobody logs out. Each user’s browser login is saved and reused. Round 2 starts by itself: the system checks every 2 seconds whether Round 1 has finished (it gives up after 2 hours).</span>'},
+ {round:'Round 2 · Money flow'},
+ {lineup:'Line-up: User 1 reopens the project, then all 3 start together.'},
+ {s:'7',nm:'Add staff',why:'1 group of 2 people, plus 3 single people.',t:'45 s',u:[[n('Group of 2')],[n('1 person')],[n('2 people')]]},
+ {lineup:'Line-up: nobody continues until all 5 people are saved. After this, only gates keep users in order.'},
+ {s:'8',nm:'Assign staff',why:'Each of the 5 people goes on one plan line.',t:'—',u:[[n('3 people'),r(1)],[n('2 people'),r(1)],null]},
+ {s:'9',nm:'Make contracts',why:'3 other-cost lines each get a new contract and PO number.',t:'10 min',u:[null,[w([1,2],1),n('1 contract'),r(2)],[w([1,2],1),n('2 contracts'),r(2)]]},
+ {s:'10',nm:'Goods receipt',why:'User 2 saves. Users 1 and 3 must see the live pop-up.',t:'10 min',u:[[w([2,3],2),n('Open screen'),r(3),n('See pop-up')],[w([2,3],2),w([1,3],3),n('Merge + save'),r(4)],[n('Open screen'),r(3),n('See pop-up')]]},
+ {s:'11',nm:'Accrual report',why:'Report must match what User 2 saved.',t:'5 min',u:[[w([2],4),n('Check report'),rt('retries every 5 s'),r(5)],[w([1,3],5),n('Wait')],[w([2],4),n('Check report'),rt('retries every 5 s'),r(5)]]},
+ {s:'12–13',nm:'Lock forecast 1',why:'Opex and Capex locked by different users.',t:'10 min',u:[[n('Lock Opex'),r(6)],[n('Lock Capex'),r(6)],[w([1,2],6),n('Check both'),rt('reloads every 5 s')]]},
+ {s:'14',nm:'Import invoices',why:'3 invoices, one per contract.',t:'90 s',u:[[n('Import 3'),r(7)],null,null]},
+ {s:'15',nm:'Approve invoices',why:'Each user approves one.',t:'10 min',u:[[n('Approve 1')],[w([1],7),n('Approve 1')],[w([1],7),n('Approve 1')]]},
+ {s:'—',nm:'Log out',t:'—',u:[[n('Log out')],[n('Log out')],[n('Log out')]]},
+ {handoff:'<b>Between Round 2 and Round 3</b><span>Everyone has logged out. Round 3 starts with fresh logins.</span>'},
+ {round:'Round 3 · Final checks'},
+ {lineup:'Line-up: User 1 logs in first. Then Users 2 and 3 log in and open Timesheet Review early, so they will catch the pop-up.'},
+ {s:'16',nm:'Edit expected days',why:'User 1 edits 3 rows. Users 2 and 3 must see the change.',t:'10 min',u:[[n('Edit 3 rows'),r(8)],[w([1],8),n('See pop-up + check'),r(8)],[w([1],8),n('See pop-up + check'),r(8)]]},
+ {s:'17',nm:'Accrual again',why:'Everyone visits planning, then User 1 downloads the report.',t:'10 min',u:[[w(ALL,8),n('Visit planning'),r(9),w(ALL,9),n('Download report')],[w(ALL,8),n('Visit planning'),r(9)],[w(ALL,8),n('Visit planning'),r(9)]]},
+ {s:'18',nm:'Import timesheets',why:'5 timesheet rows.',t:'90 s',u:[[n('Import')],null,null]},
+ {s:'19',nm:'Export days',why:'Download Timesheet Services report.',t:'90 s',u:[[n('Export')],null,null]},
+ {s:'20–21',nm:'Lock forecast 2',why:'Same as 12–13, for FC II.',t:'10 min',u:[[n('Lock Opex'),r(10)],[n('Lock Capex'),r(10)],[w([1,2],10),n('Check both'),rt('reloads every 5 s')]]},
+ {s:'22',nm:'Compare totals',why:'All reports should show the same numbers.',t:'—',u:[[n('Compare')],null,null]},
+ {s:'23',nm:'Everyone sees it',why:'Last access check.',t:'—',u:[null,[n('Check')],[n('Check')]]},
+ {s:'24',nm:'Log out',t:'—',u:[[n('Log out')],[n('Log out')],[n('Log out')]]},
+];
+
+function item(u,x){
+  if(x[0]==='node') return N(u,x[1]);
+  if(x[0]==='wait') return WAIT(x[1],x[2]);
+  if(x[0]==='raise') return RAISE(x[1]);
+  return RETRY(x[1]);
+}
+let h='<div class="head first">Step</div>'+[1,2,3].map(u=>`<div class="head"><span class="dot u${u}">${u}</span>User ${u}</div>`).join('');
+for(const row of ROWS){
+  if(row.round){h+=`<div class="round">${row.round}</div>`;continue}
+  if(row.lineup){h+=`<div class="lineuprow">${ICONS.line}${row.lineup}</div>`;continue}
+  if(row.handoff){h+=`<div class="lineuprow" style="background:var(--surface-2);color:var(--ink-2);flex-direction:column;align-items:flex-start;gap:2px">${row.handoff}</div>`;continue}
+  h+=`<div class="lbl"><span class="num">Step ${row.s}</span><span class="name">${row.nm}</span>${row.why?`<span class="why">${row.why}</span>`:''}${row.t!=='—'?`<span><span class="tag clock">${ICONS.clock}up to ${row.t}</span></span>`:''}</div>`;
+  row.u.forEach((items,i)=>{
+    const u=i+1;
+    h+=`<div class="lane c${u}">${items?items.map(x=>item(u,x)).join(''):''}</div>`;
+  });
+}
+document.getElementById('lanes').innerHTML=h;
+
+const who=us=>`<span class="who">${us.map(mini).join('')}</span>`;
+const GATES=[
+ [1,'Staff assigned',[1,2],[2,3],'Step 9 must not start until everyone has finished step 8.'],
+ [2,'Contracts made',[2,3],[1,2],'Goods Receipt rows come from the contracts. Opening the screen too early shows missing rows.'],
+ [3,'Watchers ready',[1,3],[2],'The pop-up only reaches users already on the screen with rows loaded. User 2 must not save before they are there.'],
+ [4,'Receipt saved',[2],[1,3],'The accrual report must include the saved amounts. User 2 also passes on the total the report should show.'],
+ [5,'Accrual checked',[1,3],[2],'User 2 waits so all 3 finish step 11 before moving on.'],
+ [6,'Forecast 1 locked',[1,2],[3],'User 3 can only check the locks after both are done.'],
+ [7,'Invoices imported',[1],[2,3],'You can’t approve an invoice before it has been imported.'],
+ [8,'Days edited and checked',[1,2,3],[1,2,3],'First Users 2 and 3 wait for User 1’s save. Then all 3 wait until everyone has checked, before step 17.'],
+ [9,'Planning visited',[1,2,3],[1],'User 1 downloads the report only after all 3 have visited planning.'],
+ [10,'Forecast 2 locked',[1,2],[3],'Same as Gate 6, for FC II.'],
+];
+document.querySelector('#gates tbody').innerHTML=GATES.map(([g,name,by,wait,why])=>
+ `<tr><td class="gname"><span class="tag raise">${ICONS.flag}Gate ${g}</span><div style="margin-top:4px;font-weight:600">${name}</div></td><td>${who(by)}</td><td>${who(wait)}</td><td>${why}</td></tr>`).join('');
+</script>
